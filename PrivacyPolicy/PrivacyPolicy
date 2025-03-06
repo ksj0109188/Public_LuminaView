@@ -1,0 +1,54 @@
+Privacy Policy for LuminaView
+
+Last Updated: 2025/3/6
+
+LuminaView (“App”) is committed to protecting user privacy and ensuring that personal data is handled securely. This app only provides Apple Sign-In via Firebase Authentication and does not collect, store, or process any additional personal information.
+
+⸻
+
+1. Information We Collect
+
+This app does not directly collect or store any personal information.
+
+1.1 Apple Sign-In Information
+
+When using Apple Sign-In via Firebase Authentication, the following data may be processed:
+	•	Unique User ID (UID) provided by Apple
+	•	Name and Email (only if the user chooses to share this information)
+
+⚠️ The app does not store this data on its own servers. Authentication is managed solely through Firebase.
+
+⸻
+
+2. Purpose of Information Use
+
+The collected Apple Sign-In information is used only for authentication purposes and is not utilized for any other purpose.
+
+⸻
+
+3. Data Retention and Deletion
+	•	The Unique User ID is managed by Firebase Authentication.
+	•	If the user disconnects Apple Sign-In or deletes their Firebase account, all associated login data will be permanently removed.
+
+⸻
+
+4. Third-Party Sharing
+
+This app does not share or outsource any user information to third parties.
+
+⸻
+
+5. Security Measures
+
+To ensure user data protection, this app follows these security practices:
+	•	Minimal data processing: No personal data is stored beyond what is necessary for authentication.
+	•	Secure authentication: Firebase Authentication is used to handle login securely.
+
+⸻
+
+6. User Rights and Contact Information
+
+Users can request account deletion or disconnection from Apple Sign-In at any time through their account settings.
+
+For any inquiries, please contact us at:
+📧 Email: tjdwns6481@naver.com
