@@ -13,6 +13,16 @@
 #### Using the rear camera, the system captures camera data for 5 seconds, then activates voice guidance, supporting all official Apple languages.
 #### If the system detects an unsafe walking environment or lacks sufficient reference data, it triggers haptic feedback.
 
+## Contact
+#### If you have any feedback, suggestions, or inquiries, please use the address below. We highly value and actively consider your opinions.
+- Discord: [Join our community](https://discord.gg/xS6XApRS4p)
+- Email: tjdwns6481@naver.com
+ 
+## Upcoming Updates
+- Migration from REST Gemini API to Swift Vertex AI Module (Update scope depends on performance testing and caching support).
+- UI/UX improvements.
+- Refund system implementation.
+
 ## System Architecture
 <img width="1169" alt="image" src="https://github.com/user-attachments/assets/2d8bded1-2a82-4a86-b7b0-42bec5372988" />
 <img width="746" alt="image" src="https://github.com/user-attachments/assets/94ca1276-6be9-40d1-8700-efe1fd6af348" />
@@ -21,11 +31,3 @@
 ### We use Clean Architecture
 <img width="1193" alt="image" src="https://github.com/user-attachments/assets/90e64b78-560e-4a8b-b188-86afd489d296" />
 
-## Contact
-- Discord: [Join our community](https://discord.gg/xS6XApRS4p)
-- Email: tjdwns6481@naver.com
- 
-## Upcoming Updates
-- Migration from REST Gemini API to Swift Vertex AI Module (Update scope depends on performance testing and caching support).
-- UI/UX improvements.
-- Refund system implementation.
