@@ -3,12 +3,10 @@
 ## Introduction
 [App Store](https://apps.apple.com/kr/app/luminaview/id6737554316)
 
-<img src="https://github.com/user-attachments/assets/0b5ed64b-2c11-4f8a-a0e9-76eb29e0733d" width="100%" />
+<img src="https://github.com/user-attachments/assets/0b5ed64b-2c11-4f8a-a0e9-76eb29e0733d" width="80%" />
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/37c91308-234d-4e8e-ba71-93eaf49ab4c5" width="30%" />  
-  <img src="https://github.com/user-attachments/assets/2e1186c3-de21-41ac-80d2-a7fd696cae7f" width="30%" />
-  <img src="https://github.com/user-attachments/assets/ce58fa2f-2d62-414e-83d3-2320b4cddd97" width="30%" />
+ <img width="752" alt="image" src="https://github.com/user-attachments/assets/cb412811-9c73-405c-9995-0497660f0189" />
 </p>
 
 #### This app is designed to support safe pedestrian navigation for visually impaired individuals.
