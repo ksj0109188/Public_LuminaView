@@ -147,6 +147,97 @@ final class DriveModeSceneDIContainer: DriveModeFlowCoordinatorDependencies {
     func makeDriveModeSceneFlowCoordinator(navigationController: UINavigationController, parentCoordinator: DriveModeFlowCoordinatorDelegate) -> DriveModeFlowCoordinator {
         DriveModeFlowCoordinator(navigationController: navigationController, dependencies: self, parentDelegate: parentCoordinator)
     }
+
+
+// MARK: Child Coordinator 예시
+final class DriveModeFlowCoordinator: Coordinator {
+    var children: [any Coordinator] = [] 
+    private weak var navigationController: UINavigationController?
+    private weak var delegate: DriveModeFlowCoordinatorDelegate?
+    private let dependencies: DriveModeFlowCoordinatorDependencies
+    private var onDismissForViewController: [UIViewController: (() -> Void)] = [:]
+    
+    init(navigationController: UINavigationController? = nil,
+         dependencies: DriveModeFlowCoordinatorDependencies,
+         parentDelegate: DriveModeFlowCoordinatorDelegate?) {
+        self.navigationController = navigationController
+        self.dependencies = dependencies
+        self.delegate = parentDelegate
+    }
+    
+    func start(animated: Bool, onDismissed: (() -> Void)?) {
+        let actions = DriveModeViewModelActions(
+            showCameraPreview: showCameraPreview,
+            showPaymentScene: presentPaymentView,
+            dismissCameraPreview: dismissCameraPreviewScene,
+            dismiss: dismiss,
+            presentLoginView: presentLoginView
+        )
+        let vc = dependencies.makeDriveModeViewController(actions: actions)
+        onDismissForViewController[vc] = onDismissed
+        navigationController?.pushViewController(vc, animated: animated)
+    }
+    
+    private func dismiss(for viewController: UIViewController) {
+        guard let onDismiss = onDismissForViewController[viewController] else { return }
+        onDismiss()
+        onDismissForViewController[viewController] = nil
+    }
+    
+    func presentLoginView() {
+        delegate?.presentLoginScene()
+    }
+    
+    func presentPaymentView() {
+        delegate?.presentPaymentScene()
+    }
+}
+
+// MARK: Parent Coordinator 예시
+final class AppFlowCoordinator: Coordinator, DriveModeFlowCoordinatorDelegate, LoginSceneFlowCoordinatorDelegate, PaymentSceneFlowCoordinatorDelegate, OnBoardingSceneFlowCoordinatorDelegate {
+    var children: [Coordinator] = []
+    var navigationController: UINavigationController
+    private let appDIContainer: AppDIContainer
+    
+    init(navigationController: UINavigationController, appDIContainer: AppDIContainer) {
+        self.navigationController = navigationController
+        self.appDIContainer = appDIContainer
+    }
+    
+    func start(animated: Bool, onDismissed: (() -> Void)?) {
+        let hasLaunchedBefore = UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
+        if hasLaunchedBefore {
+            presentDriveModeScene()
+        } else {
+            UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+            UserDefaults.standard.synchronize() // 즉시 저장
+            presentOnboardingScene()
+        }
+    }
+    
+    func presentDriveModeScene() {
+        navigationController.setViewControllers([], animated: false)
+        let driveModeSceneDIContainer = appDIContainer.makeDriveModeSceneDIContainer()
+        let coordinator = driveModeSceneDIContainer.makeDriveModeSceneFlowCoordinator(navigationController: navigationController, parentCoordinator: self)
+        presentChild(coordinator, animated: false)
+    }
+    
+    func presentLoginScene() {
+        let loginSceneDIContainer = appDIContainer.makeLoginSceneDIContainer()
+        let coordinator = loginSceneDIContainer.makeLoginSceneFlowCoordinator(navigationController: navigationController, parentCoordinator: self)
+        presentChild(coordinator, animated: false)
+    }
+    
+    func presentPaymentScene() {
+        let paymentDIContainer = appDIContainer.makePaymentDIContainer()
+        let coordinator = paymentDIContainer.makePaymentSceneFlowCoordinator(navigationController: navigationController, parentCoordinator: self)
+        presentChild(coordinator, animated: false)
+    }
+    
+    func dismissScene(scene coordinator: Coordinator) {
+        removeChild(coordinator)
+    }
+}
 ```
 
 <section id="problem-solving">
