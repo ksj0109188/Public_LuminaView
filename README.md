@@ -4,7 +4,7 @@
 [App Store](https://apps.apple.com/kr/app/luminaview/id6737554316)
 
 <p align="center">
- <img src="https://github.com/user-attachments/assets/0b5ed64b-2c11-4f8a-a0e9-76eb29e0733d" width="80%" />
+ <img src="https://github.com/user-attachments/assets/0b5ed64b-2c11-4f8a-a0e9-76eb29e0733d" width="75%"  />
  <img width="752" alt="image" src="https://github.com/user-attachments/assets/cb412811-9c73-405c-9995-0497660f0189" width="80%" />
 </p>
 
