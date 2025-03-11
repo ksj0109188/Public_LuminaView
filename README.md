@@ -12,6 +12,10 @@
 #### Using the rear camera, the system captures camera data for 5 seconds, then activates voice guidance, supporting all official Apple languages.
 #### If the system detects an unsafe walking environment or lacks sufficient reference data, it triggers haptic feedback.
 
+## Goal
+
+### We have developed an AI-powered solution aimed at enhancing the safety of visually impaired individuals, with the ultimate goal of enabling them to live worry-free lives. Moreover, we are actively seeking ways to continuously reduce app usage costs.
+
 ## Contact
 #### If you have any feedback, suggestions, or inquiries, please use the address below. We highly value and actively consider your opinions.
 - Discord: [Join our community](https://discord.gg/xS6XApRS4p)
