@@ -1,6 +1,8 @@
 # Public_LuminaView
 
 ## Introduction
+[App Store](https://apps.apple.com/kr/app/luminaview/id6737554316)
+
 <img src="https://github.com/user-attachments/assets/0b5ed64b-2c11-4f8a-a0e9-76eb29e0733d" width="100%" />
 
 <p align="center">
