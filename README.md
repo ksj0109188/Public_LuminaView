@@ -1,7 +1,6 @@
 # Public_LuminaView
 
 ## Introduction
-[App Store](https://apps.apple.com/kr/app/luminaview/id6737554316)
 
 <p align="center">
  <img src="https://github.com/user-attachments/assets/0b5ed64b-2c11-4f8a-a0e9-76eb29e0733d" width="75%"  />
@@ -11,6 +10,7 @@
 #### This app is designed to support safe pedestrian navigation for visually impaired individuals.
 #### Using the rear camera, the system captures camera data for 5 seconds, then activates voice guidance, supporting all official Apple languages.
 #### If the system detects an unsafe walking environment or lacks sufficient reference data, it triggers haptic feedback.
+[App Store](https://apps.apple.com/kr/app/luminaview/id6737554316)
 
 ## Goal
 
