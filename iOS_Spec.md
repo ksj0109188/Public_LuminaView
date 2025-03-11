@@ -1,13 +1,13 @@
 # Spec
-iOS 18.0 +
-인터넷 연결 필요
-Apple ID
+### iOS 18.0 +
+### 인터넷 연결 필요
+### Apple ID
 
 # Skills
-UIFramework: UIKit, SwiftUI
-Library: AVFoundation, AVFAudio, StoreKit2, AuthenticationServices, Firebase Auth, Voice Over, Translation
-Local Database: User Defaults
-Remote Database: Firebase Cloud Firestore
+### UIFramework: UIKit, SwiftUI
+### Library: AVFoundation, AVFAudio, StoreKit2, AuthenticationServices, Firebase Auth, Voice Over, Translation
+### Local Database: User Defaults
+### Remote Database: Firebase Cloud Firestore
 
 # Functions
 
@@ -72,6 +72,9 @@ Remote Database: Firebase Cloud Firestore
     </td>
   </tr>
   </Table>
+  
+<section id="Architecture">
+</section>
 
 # Architecture
 ### Clean Architecture + MVVM-C
@@ -146,6 +149,30 @@ final class DriveModeSceneDIContainer: DriveModeFlowCoordinatorDependencies {
     }
 ```
 
+<section id="problem-solving">
+</section>
+
+# 고민 및 문제 해결 과정
+
+### H264 AVC (Advanced Video Coding / MPEG-4 Part 10) vs H265
+- **문제:** WebSocket을 통해 데이터를 송수신하는 환경에서 압축 효율이 중요함  
+- **해결:** 압축 효율이 뛰어난 H265(HEVC)를 사용하기로 결정  
+  > H.265(HEVC)는 AVC보다 약 50% 더 효율적인 압축이 가능합니다.
+
+### 어느 Multimodal AI를 사용해야 할까?
+- **고민:** 개발 당시 비용 효율성이 중요한 요소였음  
+- **결과:** Gemini Flash가 가장 저렴하여 선택됨
+<img width="487" alt="image" src="https://github.com/user-attachments/assets/ce6aa31d-733c-4a94-bd63-cd8fd60f2c90" />
 
 
-# 고민들과 문제 해결과정
+### Gemini API 보안 및 통신 방식 선택
+- **문제:** Gemini API 보안을 위해 서버가 필요하며, 클라이언트와 서버 간 통신 방식 선택이 필요함  
+- **해결:**  
+  - 앱에서 5초 동안 수집되는 이미지 데이터 양을 고려하여, 16KB~64KB 사이의 데이터 송신에 유리한 WebSocket을 채택  
+  - HTTP를 사용할 경우 5초마다 요청이 발생하여 오버헤드가 증가하므로 WebSocket 방식을 선택함
+
+### 네트워크 인터페이스 변경에 따른 WebSocket 연결 핸들링
+- **문제:** 네트워크 인터페이스 변경(예: Cellular → WiFi → Cellular) 시, 기존 연결이 최신 정보로 업데이트되지 않아 혼란이 발생할 수 있음  
+- **해결:**  
+  - 인터페이스 변경 시 새로운 WebSocket 연결을 생성하고 기존 연결은 종료하여 최신 정보를 반영  
+  - 이전 연결은 4-way handshake가 일어나기 전에 인터페이스 변경으로 인해 제대로 종료되지 않는 문제를, 리버스 프록시 설정으로 idle 상태의 스트림을 주기적으로 제거하여 해결함
