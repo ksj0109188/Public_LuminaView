@@ -1,6 +1,6 @@
 # Public_LuminaView
 
-## Intro
+## Introduction
 <img src="https://github.com/user-attachments/assets/0b5ed64b-2c11-4f8a-a0e9-76eb29e0733d" width="100%" />
 
 <p align="center">
@@ -9,16 +9,23 @@
   <img src="https://github.com/user-attachments/assets/ce58fa2f-2d62-414e-83d3-2320b4cddd97" width="30%" />
 </p>
 
-#### 이 앱은 시각장애인을 위해 안전한 도보이동을 지원하는 앱입니다.
-#### Using the rear camera, the system collects camera data for 5 seconds, after which a guidance voice is activated, supporting Apple’s official languages.
-#### If it is determined that there is no safe or reference information available while walking, haptic feedback is triggered.
+#### This app is designed to support safe pedestrian navigation for visually impaired individuals.
+#### Using the rear camera, the system captures camera data for 5 seconds, then activates voice guidance, supporting all official Apple languages.
+#### If the system detects an unsafe walking environment or lacks sufficient reference data, it triggers haptic feedback.
 
 ## System Architecture
 <img width="1169" alt="image" src="https://github.com/user-attachments/assets/2d8bded1-2a82-4a86-b7b0-42bec5372988" />
 <img width="746" alt="image" src="https://github.com/user-attachments/assets/94ca1276-6be9-40d1-8700-efe1fd6af348" />
 
 ## iOS Architecture
+### We use Clean Architecture
 <img width="1193" alt="image" src="https://github.com/user-attachments/assets/90e64b78-560e-4a8b-b188-86afd489d296" />
 
-## 업데이트 예정
-REST Gemini API -> Swift Vertax AI Module 마이그레이션 (성능 테스트/캐싱 기능 지원 유무에 따라 업데이트 변경예정)
+## Contact
+- Discord: [Join our community](https://discord.gg/xS6XApRS4p)
+- Email: tjdwns6481@naver.com
+ 
+## Upcoming Updates
+- Migration from REST Gemini API to Swift Vertex AI Module (Update scope depends on performance testing and caching support).
+- UI/UX improvements.
+- Refund system implementation.
