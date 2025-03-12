@@ -6,6 +6,7 @@
 # Skills
 ### UIFramework: UIKit, SwiftUI
 ### Library: AVFoundation, AVFAudio, StoreKit2, AuthenticationServices, Firebase Auth, Voice Over, Translation
+### Third party: RxSwift
 ### Local Database: User Defaults
 ### Remote Database: Firebase Cloud Firestore
 
