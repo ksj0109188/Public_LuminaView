@@ -26,6 +26,10 @@
 - UI/UX improvements.
 - Refund system implementation.
 
+
+<span id="SystemArchitecture">
+</span>
+
 ## System Architecture
 <img width="1169" alt="image" src="https://github.com/user-attachments/assets/2d8bded1-2a82-4a86-b7b0-42bec5372988" />
 <img width="746" alt="image" src="https://github.com/user-attachments/assets/94ca1276-6be9-40d1-8700-efe1fd6af348" />
