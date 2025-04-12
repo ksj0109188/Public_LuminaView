@@ -85,7 +85,7 @@ https://apps.apple.com/kr/app/luminaview/id6737554316
 <img width="1193" alt="image" src="https://github.com/user-attachments/assets/90e64b78-560e-4a8b-b188-86afd489d296" />
 의존성 주입 관리는 DIContainer를 활용해 수행했습니다.
 
-예제코드는 다음과 같고 생략된 부분입니다.
+## 요약코드
 ```swift
 final class AppDIContainer {
     //MAKR: 인프라 의존성 주입
@@ -257,217 +257,100 @@ final class AppFlowCoordinator: Coordinator, DriveModeFlowCoordinatorDelegate, L
 
 ## 요약코드
 ```swift
-// 카메라 기능 프로토콜
-protocol Recodable {
-    func configureCamera()
-    func startRecord(subject: PublishSubject<(Data,URL)>)
-    func stopRecord()
-    func setPreview(view: UIView)
-    func recordingStatusStream() -> BehaviorSubject<Bool>
-    func cameraAvailabilityStream() -> BehaviorSubject<Bool>
+// 1. ViewModel에서 스트림 생성 및 시작
+class DriveModeViewModel {
+    func startRecordFlow() -> (PublishSubject<String>, Bool) {
+        // 스트림 생성
+        let requestStream = PublishSubject<(Data, URL)>() // 카메라에서 네트워크로 데이터 전달
+        let resultStream = PublishSubject<String>()       // 네트워크에서 ViewModel로 결과 전달
+        
+        // 네트워크 연결 설정
+        fetchGuideUseCase.execute(
+            requestStream: requestStream,
+            resultStream: resultStream,
+            authToken: token
+        )
+        
+        // 카메라 녹화 시작
+        cameraManager.startRecord(subject: requestStream)
+        
+        // 결과 스트림 구독 설정
+        resultStream
+            .subscribe(onNext: { [weak self] content in
+                // UI 업데이트
+                DispatchQueue.main.async {
+                    self?.guideContent = content
+                }
+                // 사용량 차감
+                self?.decreaseUsagage()
+            })
+            .disposed(by: disposeBag)
+        
+        return (resultStream, isPossibleStart)
+    }
 }
 
-final class CameraManger: NSObject, Recodable {
-    // 핵심 프로퍼티
-    private var captureSession: AVCaptureSession?
-    private var movieOutput: AVCaptureMovieFileOutput?
-    private var cameraFileSubject: PublishSubject<(Data,URL)>?
-    private var cameraRecodingCheckSubject: BehaviorSubject<Bool>
-    private var cameraAvailableSubject: BehaviorSubject<Bool>
-    
-    // 주요 메서드
-    func configureCamera() {
-        // 카메라 세션, 입출력 설정
-        // 오류 발생 시 cameraAvailableSubject.onError() 호출
-    }
-    
+// 2. 카메라에서 데이터 방출
+class CameraManger {
     func startRecord(subject: PublishSubject<(Data,URL)>) {
         cameraFileSubject = subject
         captureSession?.startRunning()
-        startFileOutput()
-        isRecording()
     }
     
+    // 파일 캡처 완료 시 데이터 방출
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, ...) {
+        let fileData = try Data(contentsOf: outputFileURL)
+        cameraFileSubject?.onNext((fileData, outputFileURL)) // 방출
+        startFileOutput() // 다음 녹화 시작
+    }
+
+    // 녹화 종료
     func stopRecord() {
         captureSession?.stopRunning()
         cameraFileSubject?.onCompleted()
         cameraFileSubject = nil
     }
-    
-    // AVCaptureFileOutputRecordingDelegate 구현
-    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        // 파일 데이터를 읽어서 subject로 전달
-        let fileData = try Data(contentsOf: outputFileURL)
-        cameraFileSubject?.onNext((fileData, outputFileURL))
-        startFileOutput() // 다음 녹화 시작
-    }
 }
 
-// Websocket 모듈
-protocol SendableWebSocket: AnyObject {
-    func sendToWebSocket(data: Data, fileURL: URL)
-}
-
-final class WebSocketRepository: GuideAPIWebRepository, SendableWebSocket {
-    // 핵심 프로퍼티
-    private var webSocketTask: URLSessionWebSocketTask?
-    private var session: URLSession!
-    private var messageSubject: PublishSubject<URLSessionWebSocketTask.Message>?
-    private var isConnectionLess: Bool = true
-    var resultStream: PublishSubject<String>?
-    
-    // 주요 메서드
-    func setupResultStream(resultStream: PublishSubject<String>) {
-        self.resultStream = resultStream
-    }
-    
+// 3. WebSocket 레포지토리에서 데이터 수신 및 전송
+class WebSocketRepository {
     func setupAPIConnect(requestStream: PublishSubject<(Data,URL)>, authToken: String) {
         setupWebSocket(authToken: authToken)
         
-        // 카메라에서 오는 데이터 구독
+        // 카메라 데이터 구독
         requestStream
             .subscribe(onNext: { [weak self] in
                 let fileData = $0.0
                 let fileURL = $0.1
+                // 웹소켓으로 데이터 전송
                 self?.sendToWebSocket(data: fileData, fileURL: fileURL)
             })
             .disposed(by: disposeBag)
     }
     
     private func setupWebSocket(authToken: String) {
-        // 웹소켓 설정 및 메시지 구독
-        messageSubject = PublishSubject<URLSessionWebSocketTask.Message>()
+        // 서버 응답 구독
         messageSubject?
             .subscribe(onNext: { [weak self] message in
                 switch message {
                 case .string(let text):
+                    // 결과 스트림으로 방출
                     self?.resultStream?.onNext(text)
-                // ...
                 }
                 self?.listenForMessage()
             })
             .disposed(by: disposeBag)
-            
-        listenForMessage()
-    }
-    
-    func sendToWebSocket(data: Data, fileURL: URL) {
-        // 데이터를 청크로 나눠서 웹소켓으로 전송
-        // 전송 완료 후 파일 삭제
     }
 }
 
-// ViewModel
-struct DriveModeViewModelActions {
-    let showCameraPreview: (_ viewModel: DriveModeViewModel) -> Void
-    let showPaymentScene: () -> Void
-    let dismissCameraPreview: () -> Void
-    let presetionLoginView: () -> Void
-}
-
-final class DriveModeViewModel: ObservableObject {
-    // UI 바인딩 프로퍼티
-    @Published var guideContent: String = ""
-    @Published var isClear = false
-    
-    // 주입받은 의존성
-    private let fetchGuideUseCase: FetchGuideUseCase // WebSocketRepository 사용
-    private let stopGuideUseCase: StopGuideUseCase
-    private let cameraManager: Recodable
-    private let speakerManager: Speakable
-    private var userInfo: UserInfo?
-    
-    // 주요 메서드
-    func startRecordFlow() -> (PublishSubject<String>, Bool) {
-        let requestStream = PublishSubject<(Data, URL)>()
-        let resultStream = PublishSubject<String>()
-        
-        // 사용자 로그인/사용량 확인 후
-        // 1. 웹소켓 연결 및 결과 관찰 설정
-        createResultObserver(stream: resultStream)
-        // 2. 가이드 서비스 요청 시작
-        fetchGuideUseCase.execute(requestStream: requestStream,
-                                  resultStream: resultStream,
-                                  authToken: token)
-        // 3. 카메라 녹화 시작
-        cameraManager.startRecord(subject: requestStream)
-        
-        return (resultStream, isPossibleStart)
-    }
-    
-    private func createResultObserver(stream: PublishSubject<String>) {
-        stream
-            .subscribe(onNext: { [weak self] content in
-                self?.handleContent(content)
-            }, onError: { [weak self] error in
-                self?.handleError(error)
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func handleContent(_ content: String) {
-        // 서버 응답 처리 및 UI 업데이트
-        DispatchQueue.main.async {
-            self.guideContent = content
-            self.translationVersion += 1
-        }
-        decreaseUsagage() // 사용량 차감
-    }
-    
+// 4. 종료 흐름
+class DriveModeViewModel {
     func stopRecordFlow() {
-        // 사용량 업데이트
-        // 가이드 서비스 중단
+        // 서버 연결 종료
         stopGuideUseCase.execute()
         // 카메라 녹화 중단
-        stopRecord()
+        cameraManager.stopRecord()
     }
-}
-
-// 데이터 흐름 코드
-// 1. 시작: ViewController에서 뷰모델의 메서드 호출
-let (resultStream, canStart) = viewModel.startRecordFlow()
-
-// 2. 내부 흐름
-// DriveModeViewModel 내부
-func startRecordFlow() {
-    let requestStream = PublishSubject<(Data, URL)>()
-    let resultStream = PublishSubject<String>()
-    
-    // ViewModel → UseCase → WebSocketRepository
-    fetchGuideUseCase.execute(requestStream: requestStream,
-                              resultStream: resultStream,
-                              authToken: token)
-    
-    // ViewModel → CameraManager
-    cameraManager.startRecord(subject: requestStream)
-    
-    // 결과 스트림 구독
-    createResultObserver(stream: resultStream)
-}
-
-// 3. 데이터 전달 (CameraManager → WebSocketRepository)
-// CameraManager 내부 (AVCaptureFileOutputRecordingDelegate 콜백)
-func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, ...) {
-    let fileData = try Data(contentsOf: outputFileURL)
-    cameraFileSubject?.onNext((fileData, outputFileURL))
-}
-
-// 4. WebSocketRepository에서 데이터 처리 및 결과 반환
-// WebSocketRepository 내부
-messageSubject?.subscribe(onNext: { [weak self] message in
-    switch message {
-    case .string(let text):
-        self?.resultStream?.onNext(text) // 결과를 ViewModel로 전달
-    }
-})
-
-// 5. ViewModel에서 결과 처리
-// DriveModeViewModel 내부
-private func handleContent(_ content: String) {
-    DispatchQueue.main.async {
-        self.guideContent = content // UI 업데이트
-    }
-    decreaseUsagage() // 사용량 차감
 }
 
 ```
